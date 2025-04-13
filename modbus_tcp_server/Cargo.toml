@@ -1,0 +1,19 @@
+[package]
+name = "modbus_tcp_server"
+version = "2025.4.13"
+edition = "2021"
+description = "A modbus tcp server emulator"
+license = "GPL-3.0-or-later"
+categories = ["command-line-utilities", "development-tools"]
+keywords = ["modbus", "tcp", "emulator"]
+repository = "https://github.com/ascpkg/modbus_rtu_tcp_emulator/tree/main/modbus_tcp_server"
+
+
+[dependencies]
+anyhow = { version = "1.0.86" }
+clap = { version = "4.5.20", features = ["derive", "color"] }
+futures = { version = "0.3.30" }
+config_file_derives = { version = "2025.1.6" }
+config_file_types = { version = "2025.1.6", default-features = false, features = ["toml"] }
+tokio = { version = "1.35.1", default-features = false, features = ["macros", "rt-multi-thread", "time"] }
+tokio-modbus = { version = "0.16.1", default-features = false, features = ["tcp-server"] }
