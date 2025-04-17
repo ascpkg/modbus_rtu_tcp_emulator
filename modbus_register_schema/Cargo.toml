@@ -1,0 +1,15 @@
+[package]
+name = "modbus_register_schema"
+version = "2025.4.13"
+edition = "2021"
+description = "A modbus emulator register schema"
+license = "GPL-3.0-or-later"
+categories = ["command-line-utilities", "development-tools"]
+keywords = ["modbus", "emulator", "schema"]
+repository = "https://github.com/ascpkg/modbus_rtu_tcp_emulator/tree/main/modbus_register_schema"
+
+
+[dependencies]
+config_file_derives = { version = "2025.1.6" }
+config_file_types = { version = "2025.1.6", default-features = false, features = ["toml"] }
+serde = { version = "1.0.210", features = ["derive"] }

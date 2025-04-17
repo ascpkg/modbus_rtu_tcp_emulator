@@ -1,6 +1,7 @@
 [workspace]
 resolver = "2"
 members = [
+    "modbus_register_schema",
     "modbus_rtu_client",
     "modbus_rtu_server",
     "modbus_tcp_client",

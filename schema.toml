@@ -1,0 +1,297 @@
+[[input_registers]]
+name = "i_u8_le"
+address = 1000
+count = 1
+value.U8.default = 1
+value.U8.gt = 0
+value.U8.lt = 255
+value.U8.endianness = "Little"
+
+[[input_registers]]
+name = "i_u8_be"
+address = 1001
+count = 1
+value.U8.default = 255
+value.U8.gt = 0
+value.U8.lt = 255
+
+[[input_registers]]
+name = "i_u16_le_1"
+address = 1002
+count = 1
+value.U16.default = 0x00ff
+value.U16.lte = 65535
+value.U16.gte = 0
+value.U16.endianness = "Little"
+
+[[input_registers]]
+name = "i_u16_le_2"
+address = 1003
+count = 1
+value.U16.default = 0xff00
+value.U16.lte = 65535
+value.U16.gte = 0
+value.U16.endianness = "Little"
+
+[[input_registers]]
+name = "i_u16_be_1"
+address = 1004
+count = 1
+value.U16.default = 0x00ff
+value.U16.lte = 65535
+value.U16.gte = 0
+
+[[input_registers]]
+name = "i_u16_be_2"
+address = 1005
+count = 1
+value.U16.default = 0xff00
+value.U16.lte = 65535
+value.U16.gte = 0
+
+[[input_registers]]
+name = "i_u32_le_1"
+address = 1006
+count = 2
+value.U32.default = 0xffff0000
+value.U32.lte = 0xffffffff
+value.U32.gte = 0
+value.U32.endianness = "Little"
+
+[[input_registers]]
+name = "i_u32_le_2"
+address = 1008
+count = 2
+value.U32.default = 0x0000ffff
+value.U32.lte = 0xffffffff
+value.U32.gte = 0
+value.U32.endianness = "Little"
+
+[[input_registers]]
+name = "i_u32_be_1"
+address = 1010
+count = 2
+value.U32.default = 0xffff0000
+value.U32.lte = 0xffffffff
+value.U32.gte = 0
+
+[[input_registers]]
+name = "i_u32_be_2"
+address = 1012
+count = 2
+value.U32.default = 0x00000fffff
+value.U32.lte = 0xffffffff
+value.U32.gte = 0
+
+[[input_registers]]
+name = "i_u64_le_1"
+address = 1014
+count = 4
+value.U64.default = 0xfffff00000
+value.U64.lte = 0xffffffffff
+value.U64.gte = 0
+value.U64.endianness = "Little"
+
+[[input_registers]]
+name = "i_u64_le_2"
+address = 1018
+count = 4
+value.U64.default = 0x00000fffff
+value.U64.lte = 0xffffffffff
+value.U64.gte = 0
+value.U64.endianness = "Little"
+
+[[input_registers]]
+name = "i_u64_be_1"
+address = 1022
+count = 4
+value.U64.default = 0xfffff00000
+value.U64.lte = 0xffffffffff
+value.U64.gte = 0
+
+[[input_registers]]
+name = "i_u64_be_2"
+address = 1026
+count = 4
+value.U64.default = 0x00000fffff
+value.U64.lte = 0xffffffffff
+value.U64.gte = 0
+
+[[input_registers]]
+name = "i_bytes_le"
+address = 1030
+count = 4
+value.Bytes.default = [1, 2, 3, 4]
+value.Bytes.endianness = "Little"
+
+[[input_registers]]
+name = "i_bytes_be"
+address = 1034
+count = 4
+value.Bytes.default = [4, 3, 2, 1]
+
+[[input_registers]]
+name = "i_string_le"
+address = 1038
+count = 8
+value.String.default = "sensor-1"
+value.String.endianness = "Little"
+
+[[input_registers]]
+name = "i_string_be"
+address = 1046
+count = 8
+value.String.default = "sensor-2"
+
+[[holding_registers]]
+name = "h_u8_le"
+address = 5000
+count = 1
+value.U8.default = 1
+value.U8.gt = 0
+value.U8.lt = 255
+value.U8.endianness = "Little"
+
+[[holding_registers]]
+name = "h_u8_be"
+address = 5001
+count = 1
+value.U8.default = 255
+value.U8.gt = 0
+value.U8.lt = 255
+
+[[holding_registers]]
+name = "h_u16_le_1"
+address = 5002
+count = 1
+value.U16.default = 0x00ff
+value.U16.lte = 65535
+value.U16.gte = 0
+value.U16.endianness = "Little"
+
+[[holding_registers]]
+name = "h_u16_le_2"
+address = 5003
+count = 1
+value.U16.default = 0xff00
+value.U16.lte = 65535
+value.U16.gte = 0
+value.U16.endianness = "Little"
+
+[[holding_registers]]
+name = "h_u16_be_1"
+address = 5004
+count = 1
+value.U16.default = 0x00ff
+value.U16.lte = 65535
+value.U16.gte = 0
+
+[[holding_registers]]
+name = "h_u16_be_2"
+address = 5005
+count = 1
+value.U16.default = 0xff00
+value.U16.lte = 65535
+value.U16.gte = 0
+
+[[holding_registers]]
+name = "h_u32_le_1"
+address = 5006
+count = 2
+value.U32.default = 0xffff0000
+value.U32.lte = 0xffffffff
+value.U32.gte = 0
+value.U32.endianness = "Little"
+
+[[holding_registers]]
+name = "h_u32_le_2"
+address = 5008
+count = 2
+value.U32.default = 0x0000ffff
+value.U32.lte = 0xffffffff
+value.U32.gte = 0
+value.U32.endianness = "Little"
+
+[[holding_registers]]
+name = "h_u32_be_1"
+address = 5010
+count = 2
+value.U32.default = 0xffff0000
+value.U32.lte = 0xffffffff
+value.U32.gte = 0
+
+[[holding_registers]]
+name = "h_u32_be_2"
+address = 5012
+count = 2
+value.U32.default = 0x00000fffff
+value.U32.lte = 0xffffffff
+value.U32.gte = 0
+
+[[holding_registers]]
+name = "h_u64_le_1"
+address = 5014
+count = 4
+value.U64.default = 0xfffff00000
+value.U64.lte = 0xffffffffff
+value.U64.gte = 0
+value.U64.endianness = "Little"
+
+[[holding_registers]]
+name = "h_u64_le_2"
+address = 5018
+count = 4
+value.U64.default = 0x00000fffff
+value.U64.lte = 0xffffffffff
+value.U64.gte = 0
+value.U64.endianness = "Little"
+
+[[holding_registers]]
+name = "h_u64_be_1"
+address = 5022
+count = 4
+value.U64.default = 0xfffff00000
+value.U64.lte = 0xffffffffff
+value.U64.gte = 0
+
+[[holding_registers]]
+name = "h_u64_be_2"
+address = 5026
+count = 4
+value.U64.default = 0x00000fffff
+value.U64.lte = 0xffffffffff
+value.U64.gte = 0
+
+[[holding_registers]]
+name = "h_bytes_le"
+address = 5030
+count = 4
+value.Bytes.default = [1, 2, 3, 4]
+value.Bytes.max_size = 8
+value.Bytes.endianness = "Little"
+
+[[holding_registers]]
+name = "h_bytes_be"
+address = 5034
+count = 4
+value.Bytes.default = [4, 3, 2, 1]
+
+[[holding_registers]]
+name = "h_string_le"
+address = 5038
+count = 8
+value.String.default = "sensor-1"
+value.String.endianness = "Little"
+
+[[holding_registers]]
+name = "h_string_be"
+address = 5046
+count = 8
+value.String.default = "sensor-2"
+
+[[holding_registers]]
+name = "h_enum_be"
+address = 5054
+count = 2
+value.Enum.default = "black"
+value.Enum.kv = { black = 1, white = 2, red = 3, green = 4, blue = 5, yellow = 6, pink = 7 }
