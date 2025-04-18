@@ -41,7 +41,7 @@ pub fn register_write(
             }
             RegisterValueType::U32(constraints) => {
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                let bytes = convert_u16_vec_to_bytes(values, is_big_endian);
+                let bytes = u16_vec_to_bytes(values, is_big_endian);
                 let v = if is_big_endian {
                     u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])
                 } else {
@@ -60,7 +60,7 @@ pub fn register_write(
             }
             RegisterValueType::U64(constraints) => {
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                let bytes = convert_u16_vec_to_bytes(values, is_big_endian);
+                let bytes = u16_vec_to_bytes(values, is_big_endian);
                 let v = if is_big_endian {
                     u64::from_be_bytes([
                         bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6],
@@ -85,7 +85,7 @@ pub fn register_write(
             }
             RegisterValueType::Bytes(constraints) => {
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                let bytes: Vec<u8> = convert_u16_vec_to_bytes(values, is_big_endian);
+                let bytes: Vec<u8> = u16_vec_to_bytes(values, is_big_endian);
                 tracing::info!(
                     "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {:?} (raw: {:?})",
                     desc.name,
@@ -99,7 +99,7 @@ pub fn register_write(
             }
             RegisterValueType::String(constraints) => {
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                let bytes = convert_u16_vec_to_bytes(values, is_big_endian);
+                let bytes = u16_vec_to_bytes(values, is_big_endian);
                 let text = String::from_utf8(bytes).unwrap();
                 tracing::info!(
                     "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
@@ -114,7 +114,7 @@ pub fn register_write(
             }
             RegisterValueType::Enum(constraints) => {
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                let bytes = convert_u16_vec_to_bytes(values, is_big_endian);
+                let bytes = u16_vec_to_bytes(values, is_big_endian);
                 let v = if is_big_endian {
                     u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])
                 } else {

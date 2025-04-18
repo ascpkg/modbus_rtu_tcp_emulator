@@ -1,10 +1,12 @@
-use std::net::SocketAddr;
+use std::{io::Write, net::SocketAddr};
 
 use clap::Parser;
 
 use modbus_register_schema::*;
 
 use tokio_modbus::prelude::*;
+
+use tokio_serial::SerialStream;
 
 use time::{macros::format_description, UtcOffset};
 
@@ -27,31 +29,42 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         ))
         .init();
 
+    // parse command line args
     let args = cli::Args::parse();
     tracing::info!("{:?}", args);
-    let socket_addr: SocketAddr = args.addr.parse().unwrap();
     let schema = RegisterSchema::load(&args.schema, false).unwrap();
 
-    let mut ctx = tcp::connect(socket_addr).await?;
+    let mut ctx =
+        if (args.addr.starts_with("COM") || args.addr.starts_with("/dev/")) && args.baud_rate > 0 {
+            // connect serial
+            let serial_builder = tokio_serial::new(args.addr, args.baud_rate);
+            let serial_stream = SerialStream::open(&serial_builder).unwrap();
+            let serial_slave = Slave(0x17);
+            rtu::attach_slave(serial_stream, serial_slave)
+        } else {
+            // connect tcp
+            let socket_addr: SocketAddr = args.addr.parse().unwrap();
+            tcp::connect(socket_addr).await?
+        };
 
+    // show help manual
     let help_text = format!(
-        r#"Commands
-quit          : Exit the program
-help          : Show this help message
-query         : Query input/holding register schema
-         Usage: query <type> <index>
-                <type> can be 'input' or 'holding'
-                <index> can be 'all' or a specific index (input: 0-{}, holding: 0-{})
-
-read          : Read input/holding register
-         Usage: read <type> <index>
-                <type> can be 'input' or 'holding'
-                <index> can be 'all' or a specific index (0-{})
-
-write         : Write to holding register
-         Usage: write <index> <value>
-                <index> can be a specific index (0-{})
-                <value> is the value to write"#,
+        r#"
+|---------------------------------------------------------------------------------------------------------|
+| e | exit                  : Exit the program                                                            |
+| h | help                  : Show this help message                                                      |
+| q | query <type> <index>  : Query input/holding register schema                                         |
+|                             <type> can be 'i' | 'input' or 'h' | 'holding'                              |
+|                             <index> can be 'a' | 'all' or a specific index (input: 0-{}, holding: 0-{}) |
+|                                                                                                         |
+| r | read <type> <index>   : Read input/holding register                                                 |
+|                             <type> can be 'i' | 'input' or 'h' | 'holding'                              |
+|                             <index> can be 'a' | 'all' or a specific index (0-{})                       |
+|                                                                                                         |
+| w | write <index> <value> : Write to holding register                                                   |
+|                             <index> can be a specific index (0-{})                                      |
+|                             <value> is the value to write                                               |
+|---------------------------------------------------------------------------------------------------------|"#,
         schema.input_registers.len(),
         schema.holding_registers.len(),
         schema.input_registers.len(),
@@ -59,25 +72,28 @@ write         : Write to holding register
     );
     tracing::info!("{}", help_text);
 
+    // user interaction
     let mut input = String::new();
     loop {
         input.clear();
+        print!("\x1b[1m\x1b[32m> \x1b[0m");
+        std::io::stdout().flush().unwrap();
         std::io::stdin().read_line(&mut input).unwrap();
         let params = input.split_whitespace().collect::<Vec<&str>>();
         if params.len() > 0 {
             let action = params[0];
-            if action == "quit" {
+            if action == "e" || action == "exit" {
                 break;
             }
-            if action == "help" {
+            if action == "h" || action == "help" {
                 tracing::info!("{}", help_text);
-            } else if action == "query" {
+            } else if action == "q" || action == "query" {
                 if params.len() < 3 {
                     tracing::warn!("args missing, query <type> <index>");
                     continue;
                 }
-                let is_input_register = params[1] == "input";
-                if params[2] != "all" {
+                let is_input_register = action == "i" || action == "input";
+                if params[2] != "a" || params[2] != "all" {
                     let index = params[2].parse::<usize>()?;
                     let desc = if is_input_register {
                         if index >= schema.input_registers.len() {
@@ -104,13 +120,13 @@ write         : Write to holding register
                         tracing::info!("{:?}", desc);
                     }
                 }
-            } else if action == "read" {
+            } else if action == "r" || action == "read" {
                 if params.len() < 3 {
                     tracing::warn!("args missing, read <type> <index>");
                     continue;
                 }
-                let is_input_register = action == "ri";
-                if params[2] != "all" {
+                let is_input_register = action == "i" || action == "input";
+                if params[2] != "a" || params[2] != "all" {
                     let index = params[2].parse::<usize>()?;
                     let desc = if is_input_register {
                         if index >= schema.input_registers.len() {
@@ -137,7 +153,7 @@ write         : Write to holding register
                         read::read_register(&mut ctx, register, is_input_register).await?
                     }
                 }
-            } else if action == "write" {
+            } else if action == "w" || action == "write" {
                 if params.len() < 2 {
                     tracing::warn!("args missing, write <index>");
                     continue;

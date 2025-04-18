@@ -61,7 +61,7 @@ pub async fn write_register(
                     bytes.len() / 2
                 }
             ];
-            convert_bytes_to_u16_vec(bytes, is_big_endian, &mut w);
+            bytes_to_u16_vec(bytes, is_big_endian, &mut w);
             tracing::info!(
                 "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
                 desc.name,
@@ -92,7 +92,7 @@ pub async fn write_register(
                     bytes.len() / 2
                 }
             ];
-            convert_bytes_to_u16_vec(bytes, is_big_endian, &mut w);
+            bytes_to_u16_vec(bytes, is_big_endian, &mut w);
             tracing::info!(
                 "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
                 desc.name,
@@ -121,7 +121,7 @@ pub async fn write_register(
                     values.len() / 2
                 }
             ];
-            convert_bytes_to_u16_vec(values.as_slice(), is_big_endian, &mut w);
+            bytes_to_u16_vec(values.as_slice(), is_big_endian, &mut w);
             tracing::info!(
                 "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {:?} (raw: {:?})",
                 desc.name,
@@ -152,7 +152,7 @@ pub async fn write_register(
                     values.len() / 2
                 }
             ];
-            convert_bytes_to_u16_vec(values.as_bytes(), is_big_endian, &mut w);
+            bytes_to_u16_vec(values.as_bytes(), is_big_endian, &mut w);
             tracing::info!(
                 "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {:?} (raw: {:?})",
                 desc.name,
@@ -187,7 +187,7 @@ pub async fn write_register(
                     bytes.len() / 2
                 }
             ];
-            convert_bytes_to_u16_vec(bytes, is_big_endian, &mut w);
+            bytes_to_u16_vec(bytes, is_big_endian, &mut w);
             tracing::info!(
                 "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} = {} (raw: {:?})",
                 desc.name,

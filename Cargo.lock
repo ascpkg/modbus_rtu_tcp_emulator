@@ -472,74 +472,48 @@ dependencies = [
 ]
 
 [[package]]
+name = "modbus_emulator_client"
+version = "2025.4.18"
+dependencies = [
+ "anyhow",
+ "clap",
+ "config_file_derives",
+ "config_file_types",
+ "futures",
+ "modbus_register_schema",
+ "time",
+ "tokio",
+ "tokio-modbus",
+ "tokio-serial",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "modbus_emulator_server"
+version = "2025.4.14"
+dependencies = [
+ "anyhow",
+ "clap",
+ "config_file_derives",
+ "config_file_types",
+ "futures",
+ "modbus_register_schema",
+ "time",
+ "tokio",
+ "tokio-modbus",
+ "tokio-serial",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
 name = "modbus_register_schema"
 version = "2025.4.13"
 dependencies = [
  "config_file_derives",
  "config_file_types",
  "serde",
-]
-
-[[package]]
-name = "modbus_rtu_client"
-version = "2025.4.13"
-dependencies = [
- "anyhow",
- "clap",
- "config_file_derives",
- "config_file_types",
- "futures",
- "tokio",
- "tokio-modbus",
- "tokio-serial",
-]
-
-[[package]]
-name = "modbus_rtu_server"
-version = "2025.4.13"
-dependencies = [
- "anyhow",
- "clap",
- "config_file_derives",
- "config_file_types",
- "futures",
- "tokio",
- "tokio-modbus",
- "tokio-serial",
-]
-
-[[package]]
-name = "modbus_tcp_client"
-version = "2025.4.14"
-dependencies = [
- "anyhow",
- "clap",
- "config_file_derives",
- "config_file_types",
- "futures",
- "modbus_register_schema",
- "time",
- "tokio",
- "tokio-modbus",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
-name = "modbus_tcp_server"
-version = "2025.4.14"
-dependencies = [
- "anyhow",
- "clap",
- "config_file_derives",
- "config_file_types",
- "futures",
- "modbus_register_schema",
- "time",
- "tokio",
- "tokio-modbus",
- "tracing",
- "tracing-subscriber",
 ]
 
 [[package]]

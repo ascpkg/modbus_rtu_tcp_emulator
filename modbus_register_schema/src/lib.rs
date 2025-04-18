@@ -79,11 +79,7 @@ pub enum Endianness {
     Big,
 }
 
-pub fn convert_bytes_to_u16_vec(
-    input_bytes: &[u8],
-    is_big_endian: bool,
-    output_u16_vec: &mut Vec<u16>,
-) {
+pub fn bytes_to_u16_vec(input_bytes: &[u8], is_big_endian: bool, output_u16_vec: &mut Vec<u16>) {
     for i in 0..(input_bytes.len() / 2) {
         let j = i * 2;
         if j + 1 < input_bytes.len() {
@@ -98,7 +94,7 @@ pub fn convert_bytes_to_u16_vec(
     }
 }
 
-pub fn convert_u16_vec_to_bytes(input_u16_vec: &[u16], is_big_endian: bool) -> Vec<u8> {
+pub fn u16_vec_to_bytes(input_u16_vec: &[u16], is_big_endian: bool) -> Vec<u8> {
     input_u16_vec.iter().fold(vec![], |mut x, elem| {
         if is_big_endian {
             x.push((elem >> 8) as u8); // high byte

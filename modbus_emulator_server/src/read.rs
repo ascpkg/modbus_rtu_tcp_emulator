@@ -51,7 +51,7 @@ pub fn register_read(
                 } else {
                     &val.to_le_bytes()
                 };
-                convert_bytes_to_u16_vec(bytes, is_big_endian, &mut response);
+                bytes_to_u16_vec(bytes, is_big_endian, &mut response);
                 tracing::info!(
                     "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
                     desc.name,
@@ -70,7 +70,7 @@ pub fn register_read(
                 } else {
                     &val.to_le_bytes()
                 };
-                convert_bytes_to_u16_vec(bytes, is_big_endian, &mut response);
+                bytes_to_u16_vec(bytes, is_big_endian, &mut response);
                 tracing::info!(
                     "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
                     desc.name,
@@ -88,7 +88,7 @@ pub fn register_read(
                     .or(constraints.default.clone())
                     .unwrap_or_else(Vec::new);
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                convert_bytes_to_u16_vec(val.as_slice(), is_big_endian, &mut response);
+                bytes_to_u16_vec(val.as_slice(), is_big_endian, &mut response);
                 tracing::info!(
                     "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {:?} (raw: {:?})",
                     desc.name,
@@ -106,7 +106,7 @@ pub fn register_read(
                     .or(constraints.default.clone())
                     .unwrap_or_else(String::new);
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                convert_bytes_to_u16_vec(val.as_bytes(), is_big_endian, &mut response);
+                bytes_to_u16_vec(val.as_bytes(), is_big_endian, &mut response);
                 tracing::info!(
                     "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {:?} (raw: {:?})",
                     desc.name,
@@ -141,7 +141,7 @@ pub fn register_read(
                     } else {
                         &v.to_le_bytes()
                     };
-                    convert_bytes_to_u16_vec(bytes, is_big_endian, &mut response);
+                    bytes_to_u16_vec(bytes, is_big_endian, &mut response);
                     let name =
                         constraints
                             .kv

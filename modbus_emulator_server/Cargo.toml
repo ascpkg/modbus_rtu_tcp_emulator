@@ -1,12 +1,12 @@
 [package]
-name = "modbus_tcp_server"
+name = "modbus_emulator_server"
 version = "2025.4.14"
 edition = "2021"
 description = "A modbus tcp server emulator"
 license = "GPL-3.0-or-later"
 categories = ["command-line-utilities", "development-tools"]
-keywords = ["modbus", "tcp", "emulator"]
-repository = "https://github.com/ascpkg/modbus_rtu_tcp_emulator/tree/main/modbus_tcp_server"
+keywords = ["modbus", "rtu", "tcp", "emulator"]
+repository = "https://github.com/ascpkg/modbus_rtu_tcp_emulator/tree/main/modbus_emulator_server"
 
 
 [dependencies]
@@ -19,6 +19,7 @@ config_file_derives = { version = "2025.1.6" }
 config_file_types = { version = "2025.1.6", default-features = false, features = ["toml"] }
 time = { version = "0.3.36", features = ["formatting", "macros"] }
 tokio = { version = "1.35.1", default-features = false, features = ["macros", "rt-multi-thread", "time"] }
-tokio-modbus = { version = "0.16.1", default-features = false, features = ["tcp-server"] }
+tokio-modbus = { version = "0.16.1", default-features = false, features = ["tcp-server", "rtu-server"] }
+tokio-serial = { version = "5.4.4", default-features = false }
 tracing = { version = "0.1.40" }
 tracing-subscriber = { version = "0.3.18", features = ["env-filter", "time", "local-time"] }
