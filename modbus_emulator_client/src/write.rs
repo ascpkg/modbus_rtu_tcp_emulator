@@ -10,6 +10,21 @@ pub async fn write_register(
     params: Vec<&str>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     match &desc.value {
+        RegisterValueType::Coils(_constraints) => {
+            let values = params[2..]
+                .iter()
+                .map(|s| s.parse::<bool>().unwrap())
+                .collect::<Vec<bool>>();
+            tracing::info!(
+                "write(name: {}, addr: {}, count: {}) -> {:?}",
+                desc.name,
+                desc.address,
+                desc.count,
+                values
+            );
+            let _ = ctx.write_multiple_coils(desc.address, &values).await?;
+        }
+        RegisterValueType::Discrete(_constraints) => {}
         RegisterValueType::U8(constraints) => {
             let v = params[2].parse::<u16>()?;
             if v > u8::MAX.into() || !validate(v as u8, &constraints) {
@@ -61,7 +76,7 @@ pub async fn write_register(
                     bytes.len() / 2
                 }
             ];
-            bytes_to_u16_vec(bytes, is_big_endian, &mut w);
+            serialize_registers(bytes, is_big_endian, &mut w);
             tracing::info!(
                 "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
                 desc.name,
@@ -92,7 +107,7 @@ pub async fn write_register(
                     bytes.len() / 2
                 }
             ];
-            bytes_to_u16_vec(bytes, is_big_endian, &mut w);
+            serialize_registers(bytes, is_big_endian, &mut w);
             tracing::info!(
                 "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
                 desc.name,
@@ -121,7 +136,7 @@ pub async fn write_register(
                     values.len() / 2
                 }
             ];
-            bytes_to_u16_vec(values.as_slice(), is_big_endian, &mut w);
+            serialize_registers(values.as_slice(), is_big_endian, &mut w);
             tracing::info!(
                 "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {:?} (raw: {:?})",
                 desc.name,
@@ -152,7 +167,7 @@ pub async fn write_register(
                     values.len() / 2
                 }
             ];
-            bytes_to_u16_vec(values.as_bytes(), is_big_endian, &mut w);
+            serialize_registers(values.as_bytes(), is_big_endian, &mut w);
             tracing::info!(
                 "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {:?} (raw: {:?})",
                 desc.name,
@@ -187,7 +202,7 @@ pub async fn write_register(
                     bytes.len() / 2
                 }
             ];
-            bytes_to_u16_vec(bytes, is_big_endian, &mut w);
+            serialize_registers(bytes, is_big_endian, &mut w);
             tracing::info!(
                 "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} = {} (raw: {:?})",
                 desc.name,

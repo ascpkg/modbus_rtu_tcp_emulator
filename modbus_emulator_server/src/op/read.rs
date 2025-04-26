@@ -6,15 +6,58 @@ use tokio_modbus::prelude::*;
 
 use tracing;
 
-/// Helper function implementing reading registers from a HashMap.
-pub fn register_read(
+pub fn register_read_bool(
+    registers: &HashMap<u16, RegisterDescription>,
+    addr: u16,
+    cnt: u16,
+) -> Result<Vec<bool>, ExceptionCode> {
+    let mut response: Vec<bool> = Vec::new();
+    if let Some(desc) = registers.get(&addr) {
+        match &desc.value {
+            RegisterValueType::Coils(constraints) => {
+                response = constraints.get_bits(0, cnt as usize);
+                tracing::info!(
+                    "read(name: {}, addr: {}, count: {}) -> {:?} (raw: {:?})",
+                    desc.name,
+                    desc.address,
+                    desc.count,
+                    response,
+                    constraints.val,
+                );
+            }
+            RegisterValueType::Discrete(constraints) => {
+                response = constraints.get_bits(0, cnt as usize);
+                tracing::info!(
+                    "read(name: {}, addr: {}, count: {}) -> {:?} (raw: {:?})",
+                    desc.name,
+                    desc.address,
+                    desc.count,
+                    response,
+                    constraints.val,
+                );
+            }
+            RegisterValueType::U8(_constraints) => {}
+            RegisterValueType::U16(_constraints) => {}
+            RegisterValueType::U32(_constraints) => {}
+            RegisterValueType::U64(_constraints) => {}
+            RegisterValueType::Bytes(_constraints) => {}
+            RegisterValueType::String(_constraints) => {}
+            RegisterValueType::Enum(_constraints) => {}
+        }
+    }
+    Ok(response)
+}
+
+pub fn register_read_u16(
     registers: &HashMap<u16, RegisterDescription>,
     addr: u16,
     cnt: u16,
 ) -> Result<Vec<u16>, ExceptionCode> {
-    let mut response: Vec<u16> = vec![0; cnt.into()];
+    let mut response: Vec<u16> = Vec::with_capacity(cnt as usize);
     if let Some(desc) = registers.get(&addr) {
         match &desc.value {
+            RegisterValueType::Coils(_constraints) => {}
+            RegisterValueType::Discrete(_constraints) => {}
             RegisterValueType::U8(constraints) => {
                 if let Some(v) = constraints.val.or(constraints.default) {
                     response[0] = v as u16;
@@ -51,7 +94,7 @@ pub fn register_read(
                 } else {
                     &val.to_le_bytes()
                 };
-                bytes_to_u16_vec(bytes, is_big_endian, &mut response);
+                serialize_registers(bytes, is_big_endian, &mut response);
                 tracing::info!(
                     "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
                     desc.name,
@@ -70,7 +113,7 @@ pub fn register_read(
                 } else {
                     &val.to_le_bytes()
                 };
-                bytes_to_u16_vec(bytes, is_big_endian, &mut response);
+                serialize_registers(bytes, is_big_endian, &mut response);
                 tracing::info!(
                     "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
                     desc.name,
@@ -88,7 +131,7 @@ pub fn register_read(
                     .or(constraints.default.clone())
                     .unwrap_or_else(Vec::new);
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                bytes_to_u16_vec(val.as_slice(), is_big_endian, &mut response);
+                serialize_registers(val.as_slice(), is_big_endian, &mut response);
                 tracing::info!(
                     "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {:?} (raw: {:?})",
                     desc.name,
@@ -106,7 +149,7 @@ pub fn register_read(
                     .or(constraints.default.clone())
                     .unwrap_or_else(String::new);
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                bytes_to_u16_vec(val.as_bytes(), is_big_endian, &mut response);
+                serialize_registers(val.as_bytes(), is_big_endian, &mut response);
                 tracing::info!(
                     "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {:?} (raw: {:?})",
                     desc.name,
@@ -141,7 +184,7 @@ pub fn register_read(
                     } else {
                         &v.to_le_bytes()
                     };
-                    bytes_to_u16_vec(bytes, is_big_endian, &mut response);
+                    serialize_registers(bytes, is_big_endian, &mut response);
                     let name =
                         constraints
                             .kv

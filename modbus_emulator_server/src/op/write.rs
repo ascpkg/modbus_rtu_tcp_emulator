@@ -8,13 +8,58 @@ use tracing;
 
 /// Write a holding register. Used by both the write single register
 /// and write multiple registers requests.
-pub fn register_write(
+
+pub fn register_write_bool(
+    registers: &mut HashMap<u16, RegisterDescription>,
+    addr: u16,
+    values: &[bool],
+) -> Result<(), ExceptionCode> {
+    if let Some(desc) = registers.get_mut(&addr) {
+        match &mut desc.value {
+            RegisterValueType::Coils(constraints) => {
+                constraints.set_bits(0, values);
+                tracing::info!(
+                    "write(name: {}, addr: {}, count: {}) -> {:?} (raw: {:?})",
+                    desc.name,
+                    addr,
+                    desc.count,
+                    values,
+                    constraints.val
+                );
+            }
+            RegisterValueType::Discrete(constraints) => {
+                constraints.set_bits(0, values);
+                tracing::info!(
+                    "write(name: {}, addr: {}, count: {}) -> {:?} (raw: {:?})",
+                    desc.name,
+                    addr,
+                    desc.count,
+                    values,
+                    constraints.val
+                );
+            }
+            RegisterValueType::U8(_constraints) => {}
+            RegisterValueType::U16(_constraints) => {}
+            RegisterValueType::U32(_constraints) => {}
+            RegisterValueType::U64(_constraints) => {}
+            RegisterValueType::Bytes(_constraints) => {}
+            RegisterValueType::String(_constraints) => {}
+            RegisterValueType::Enum(_constraints) => {}
+        }
+    }
+
+    Ok(())
+}
+
+pub fn register_write_u16(
     registers: &mut HashMap<u16, RegisterDescription>,
     addr: u16,
     values: &[u16],
 ) -> Result<(), ExceptionCode> {
     if let Some(desc) = registers.get_mut(&addr) {
         match &mut desc.value {
+            RegisterValueType::Coils(_constraints) => {}
+            RegisterValueType::Discrete(_constraints) => {}
             RegisterValueType::U8(constraints) => {
                 constraints.val = Some(values[0] as u8);
                 tracing::info!(
@@ -41,7 +86,7 @@ pub fn register_write(
             }
             RegisterValueType::U32(constraints) => {
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                let bytes = u16_vec_to_bytes(values, is_big_endian);
+                let bytes = deserialize_registers(values, is_big_endian);
                 let v = if is_big_endian {
                     u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])
                 } else {
@@ -60,7 +105,7 @@ pub fn register_write(
             }
             RegisterValueType::U64(constraints) => {
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                let bytes = u16_vec_to_bytes(values, is_big_endian);
+                let bytes = deserialize_registers(values, is_big_endian);
                 let v = if is_big_endian {
                     u64::from_be_bytes([
                         bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6],
@@ -85,7 +130,7 @@ pub fn register_write(
             }
             RegisterValueType::Bytes(constraints) => {
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                let bytes: Vec<u8> = u16_vec_to_bytes(values, is_big_endian);
+                let bytes: Vec<u8> = deserialize_registers(values, is_big_endian);
                 tracing::info!(
                     "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {:?} (raw: {:?})",
                     desc.name,
@@ -99,7 +144,7 @@ pub fn register_write(
             }
             RegisterValueType::String(constraints) => {
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                let bytes = u16_vec_to_bytes(values, is_big_endian);
+                let bytes = deserialize_registers(values, is_big_endian);
                 let text = String::from_utf8(bytes).unwrap();
                 tracing::info!(
                     "write(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
@@ -114,7 +159,7 @@ pub fn register_write(
             }
             RegisterValueType::Enum(constraints) => {
                 let is_big_endian = constraints.endianness == Some(Endianness::Big);
-                let bytes = u16_vec_to_bytes(values, is_big_endian);
+                let bytes = deserialize_registers(values, is_big_endian);
                 let v = if is_big_endian {
                     u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])
                 } else {

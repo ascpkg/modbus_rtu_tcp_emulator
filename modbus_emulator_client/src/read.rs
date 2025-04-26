@@ -10,6 +10,30 @@ pub async fn read_register(
     is_input_register: bool,
 ) -> Result<(), Box<dyn std::error::Error>> {
     match &desc.value {
+        RegisterValueType::Coils(constraints) => {
+            let resp = ctx.read_coils(desc.address, constraints.max_bits).await??;
+            tracing::info!(
+                "read(name: {}, addr: {}, count: {}) -> {:?} (raw: {:?})",
+                desc.name,
+                desc.address,
+                desc.count,
+                resp,
+                constraints.val,
+            );
+        }
+        RegisterValueType::Discrete(constraints) => {
+            let resp = ctx
+                .read_discrete_inputs(desc.address, constraints.max_bits)
+                .await??;
+            tracing::info!(
+                "read(name: {}, addr: {}, count: {}) -> {:?} (raw: {:?})",
+                desc.name,
+                desc.address,
+                desc.count,
+                resp,
+                constraints.val,
+            );
+        }
         RegisterValueType::U8(constraints) => {
             let resp = if is_input_register {
                 ctx.read_input_registers(desc.address, 1).await??
@@ -17,7 +41,7 @@ pub async fn read_register(
                 ctx.read_holding_registers(desc.address, 1).await??
             };
             let is_big_endian = constraints.endianness == Some(Endianness::Big);
-            let bytes = u16_vec_to_bytes(&resp, is_big_endian);
+            let bytes = deserialize_registers(&resp, is_big_endian);
             tracing::info!(
                 "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
                 desc.name,
@@ -35,7 +59,7 @@ pub async fn read_register(
                 ctx.read_holding_registers(desc.address, 1).await??
             };
             let is_big_endian = constraints.endianness == Some(Endianness::Big);
-            let bytes = u16_vec_to_bytes(&resp, is_big_endian);
+            let bytes = deserialize_registers(&resp, is_big_endian);
             let v = if is_big_endian {
                 u16::from_be_bytes([bytes[0], bytes[1]])
             } else {
@@ -58,7 +82,7 @@ pub async fn read_register(
                 ctx.read_holding_registers(desc.address, 2).await??
             };
             let is_big_endian = constraints.endianness == Some(Endianness::Big);
-            let bytes = u16_vec_to_bytes(&resp, is_big_endian);
+            let bytes = deserialize_registers(&resp, is_big_endian);
             let v = if is_big_endian {
                 u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])
             } else {
@@ -81,7 +105,7 @@ pub async fn read_register(
                 ctx.read_holding_registers(desc.address, 4).await??
             };
             let is_big_endian = constraints.endianness == Some(Endianness::Big);
-            let bytes = u16_vec_to_bytes(&resp, is_big_endian);
+            let bytes = deserialize_registers(&resp, is_big_endian);
             let v = if is_big_endian {
                 u64::from_be_bytes([
                     bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6], bytes[7],
@@ -110,7 +134,7 @@ pub async fn read_register(
                     .await??
             };
             let is_big_endian = constraints.endianness == Some(Endianness::Big);
-            let bytes = u16_vec_to_bytes(&resp, is_big_endian);
+            let bytes = deserialize_registers(&resp, is_big_endian);
             tracing::info!(
                 "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {:?} (raw: {:?})",
                 desc.name,
@@ -130,7 +154,7 @@ pub async fn read_register(
                     .await??
             };
             let is_big_endian = constraints.endianness == Some(Endianness::Big);
-            let bytes = u16_vec_to_bytes(&resp, is_big_endian);
+            let bytes = deserialize_registers(&resp, is_big_endian);
             tracing::info!(
                 "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
                 desc.name,
@@ -149,7 +173,7 @@ pub async fn read_register(
                 ctx.read_holding_registers(desc.address, 2).await??
             };
             let is_big_endian = constraints.endianness == Some(Endianness::Big);
-            let bytes = u16_vec_to_bytes(&resp, is_big_endian);
+            let bytes = deserialize_registers(&resp, is_big_endian);
             let v = if is_big_endian {
                 u32::from_be_bytes([bytes[0], bytes[1], bytes[2], bytes[3]])
             } else {

@@ -39,8 +39,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             // connect serial
             let serial_builder = tokio_serial::new(args.addr, args.baud_rate);
             let serial_stream = SerialStream::open(&serial_builder).unwrap();
-            let serial_slave = Slave(0x17);
-            rtu::attach_slave(serial_stream, serial_slave)
+            let salve = Slave(0x17);
+            rtu::attach_slave(serial_stream, salve)
         } else {
             // connect tcp
             let socket_addr: SocketAddr = args.addr.parse().unwrap();
@@ -50,23 +50,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // show help manual
     let help_text = format!(
         r#"
-|---------------------------------------------------------------------------------------------------------|
-| e | exit                  : Exit the program                                                            |
-| h | help                  : Show this help message                                                      |
-| q | query <type> <index>  : Query input/holding register schema                                         |
-|                             <type> can be 'i' | 'input' or 'h' | 'holding'                              |
-|                             <index> can be 'a' | 'all' or a specific index (input: 0-{}, holding: 0-{}) |
-|                                                                                                         |
-| r | read <type> <index>   : Read input/holding register                                                 |
-|                             <type> can be 'i' | 'input' or 'h' | 'holding'                              |
-|                             <index> can be 'a' | 'all' or a specific index (0-{})                       |
-|                                                                                                         |
-| w | write <index> <value> : Write to holding register                                                   |
-|                             <index> can be a specific index (0-{})                                      |
-|                             <value> is the value to write                                               |
-|---------------------------------------------------------------------------------------------------------|"#,
-        schema.input_registers.len(),
-        schema.holding_registers.len(),
+------------------------------------------------------------
+e | exit                         : Exit the program
+h | help                         : Show this help message
+q | query <type> <index>         : Query register schema
+r | read  <type> <index>         : Read register data
+w | write <type> <index> <value> : Write data to register
+                         <value> : the value to write
+                          <type> : c | coils
+                                   d | discrete
+                                   i | input
+                                   h | holding
+                         <index> : a | all
+                     coils index : 0 - {} (read + write)
+            discrete input index : 0 - {} (read only)
+            input register index : 0 - {} (read only)
+          holding register index : 0 - {} (read + write)
+------------------------------------------------------------"#,
+        schema.coils.len(),
+        schema.discrete_inputs.len(),
         schema.input_registers.len(),
         schema.holding_registers.len()
     );
@@ -92,10 +94,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     tracing::warn!("args missing, query <type> <index>");
                     continue;
                 }
-                let is_input_register = action == "i" || action == "input";
-                if params[2] != "a" || params[2] != "all" {
-                    let index = params[2].parse::<usize>()?;
-                    let desc = if is_input_register {
+
+                let type_ = params[1];
+                let index = params[2];
+                if index != "a" && index != "all" {
+                    let index = index.parse::<usize>()?;
+                    let desc = if type_ == "c" || type_ == "coils" {
+                        if index >= schema.coils.len() {
+                            tracing::warn!("coils index out of range");
+                            continue;
+                        }
+                        &schema.coils[index]
+                    } else if type_ == "d" || type_ == "discrete" {
+                        if index >= schema.discrete_inputs.len() {
+                            tracing::warn!("discrete_inputs index out of range");
+                            continue;
+                        }
+                        &schema.discrete_inputs[index]
+                    } else if type_ == "i" || type_ == "input" {
                         if index >= schema.input_registers.len() {
                             tracing::warn!("input_registers index out of range");
                             continue;
@@ -111,7 +127,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
                     tracing::info!("{:?}", desc);
                 } else {
-                    let registers = if is_input_register {
+                    let registers = if type_ == "c" || type_ == "coils" {
+                        &schema.coils
+                    } else if type_ == "d" || type_ == "discrete" {
+                        &schema.discrete_inputs
+                    } else if type_ == "i" || type_ == "input" {
                         &schema.input_registers
                     } else {
                         &schema.holding_registers
@@ -125,10 +145,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     tracing::warn!("args missing, read <type> <index>");
                     continue;
                 }
-                let is_input_register = action == "i" || action == "input";
-                if params[2] != "a" || params[2] != "all" {
-                    let index = params[2].parse::<usize>()?;
-                    let desc = if is_input_register {
+
+                let type_ = params[1];
+                let index = params[2];
+                if index != "a" && index != "all" {
+                    let index = index.parse::<usize>()?;
+                    let desc = if type_ == "c" || type_ == "coils" {
+                        if index >= schema.coils.len() {
+                            tracing::warn!("coils index out of range");
+                            continue;
+                        }
+                        &schema.coils[index]
+                    } else if type_ == "d" || type_ == "discrete" {
+                        if index >= schema.discrete_inputs.len() {
+                            tracing::warn!("discrete_inputs index out of range");
+                            continue;
+                        }
+                        &schema.discrete_inputs[index]
+                    } else if type_ == "i" || type_ == "input" {
                         if index >= schema.input_registers.len() {
                             tracing::warn!("input_registers index out of range");
                             continue;
@@ -142,26 +176,38 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                         &schema.holding_registers[index]
                     };
 
-                    read::read_register(&mut ctx, desc, is_input_register).await?
+                    read::read_register(&mut ctx, desc, type_ == "i" || type_ == "input").await?
                 } else {
-                    let registers = if is_input_register {
+                    let registers = if type_ == "c" || type_ == "c" {
+                        &schema.coils
+                    } else if type_ == "d" || type_ == "discrete" {
+                        &schema.discrete_inputs
+                    } else if type_ == "i" || type_ == "input" {
                         &schema.input_registers
                     } else {
                         &schema.holding_registers
                     };
-                    for register in registers {
-                        read::read_register(&mut ctx, register, is_input_register).await?
+                    for desc in registers {
+                        read::read_register(&mut ctx, desc, type_ == "i" || type_ == "input")
+                            .await?
                     }
                 }
             } else if action == "w" || action == "write" {
-                if params.len() < 2 {
-                    tracing::warn!("args missing, write <index>");
+                if params.len() < 3 {
+                    tracing::warn!("args missing, write <type> <index> <value>");
                     continue;
                 }
 
-                let index = params[1].parse::<usize>()?;
-                let desc = &schema.holding_registers[index];
-                write::write_register(&mut ctx, desc, params).await?
+                let type_ = params[1];
+                let index = params[2];
+                let index = index.parse::<usize>()?;
+                if type_ == "c" || type_ == "coils" {
+                    let desc = &schema.coils[index];
+                    write::write_register(&mut ctx, desc, params).await?
+                } else {
+                    let desc = &schema.holding_registers[index];
+                    write::write_register(&mut ctx, desc, params).await?
+                }
             }
         }
     }

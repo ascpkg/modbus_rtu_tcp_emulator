@@ -143,6 +143,20 @@ address = 1046
 count = 8
 value.String.default = "sensor-2"
 
+[[coils]]
+name = "coil_test"
+address = 1052
+count = 1
+value.Coils.max_bits = 8
+value.Coils.val = [0, 1, 1, 0, 0, 1, 1, 0]
+
+[[discrete_inputs]]
+name = "discrete_test"
+address = 1053
+count = 2
+value.Coils.max_bits = 16
+value.Coils.val = [0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0]
+
 [[holding_registers]]
 name = "h_u8_le"
 address = 5000
