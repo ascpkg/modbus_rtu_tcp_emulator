@@ -148,14 +148,14 @@ name = "coil_test"
 address = 1052
 count = 1
 value.Coils.max_bits = 8
-value.Coils.val = [0, 1, 1, 0, 0, 1, 1, 0]
+value.Coils.val = [0x66]
 
 [[discrete_inputs]]
 name = "discrete_test"
 address = 1053
-count = 2
-value.Coils.max_bits = 16
-value.Coils.val = [0, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0]
+count = 1
+value.Discrete.max_bits = 16
+value.Discrete.val = [0x96, 0xb9]
 
 [[holding_registers]]
 name = "h_u8_le"

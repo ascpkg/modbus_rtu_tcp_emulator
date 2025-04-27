@@ -39,7 +39,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             // connect serial
             let serial_builder = tokio_serial::new(args.addr, args.baud_rate);
             let serial_stream = SerialStream::open(&serial_builder).unwrap();
-            let salve = Slave(0x17);
+            let salve = Slave(args.slave);
             rtu::attach_slave(serial_stream, salve)
         } else {
             // connect tcp
@@ -204,7 +204,7 @@ w | write <type> <index> <value> : Write data to register
                 if type_ == "c" || type_ == "coils" {
                     let desc = &schema.coils[index];
                     write::write_register(&mut ctx, desc, params).await?
-                } else {
+                } else if type_ == "h" || type_ == "holding" {
                     let desc = &schema.holding_registers[index];
                     write::write_register(&mut ctx, desc, params).await?
                 }

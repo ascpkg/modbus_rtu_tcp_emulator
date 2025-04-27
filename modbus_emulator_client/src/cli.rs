@@ -14,4 +14,8 @@ pub struct Args {
     /// register schema toml file
     #[arg(long, default_value = "schema.toml")]
     pub schema: String,
+
+    /// serial port baud rate
+    #[arg(long, default_value_t = 0)]
+    pub slave: u8,
 }

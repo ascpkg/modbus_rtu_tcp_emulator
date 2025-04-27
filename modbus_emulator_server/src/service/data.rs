@@ -68,7 +68,7 @@ impl ModbusServiceData {
             .map(|_| Response::WriteSingleCoil(addr, value)),
             Request::WriteMultipleCoils(addr, values) => {
                 register_write_bool(&mut self.coils.lock().unwrap(), addr, &values)
-                    .map(|_| Response::WriteMultipleRegisters(addr, values.len() as u16))
+                    .map(|_| Response::WriteMultipleCoils(addr, values.len() as u16))
             }
             // read discrete inputs
             Request::ReadDiscreteInputs(addr, cnt) => {

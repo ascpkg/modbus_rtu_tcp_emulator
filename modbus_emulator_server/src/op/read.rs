@@ -53,7 +53,7 @@ pub fn register_read_u16(
     addr: u16,
     cnt: u16,
 ) -> Result<Vec<u16>, ExceptionCode> {
-    let mut response: Vec<u16> = Vec::with_capacity(cnt as usize);
+    let mut response: Vec<u16> = vec![0; cnt.into()];
     if let Some(desc) = registers.get(&addr) {
         match &desc.value {
             RegisterValueType::Coils(_constraints) => {}

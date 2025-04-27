@@ -13,7 +13,7 @@ pub async fn read_register(
         RegisterValueType::Coils(constraints) => {
             let resp = ctx.read_coils(desc.address, constraints.max_bits).await??;
             tracing::info!(
-                "read(name: {}, addr: {}, count: {}) -> {:?} (raw: {:?})",
+                "read(name: {}, addr: {}, count: {}) -> {:?} (default: {:?})",
                 desc.name,
                 desc.address,
                 desc.count,
@@ -26,7 +26,7 @@ pub async fn read_register(
                 .read_discrete_inputs(desc.address, constraints.max_bits)
                 .await??;
             tracing::info!(
-                "read(name: {}, addr: {}, count: {}) -> {:?} (raw: {:?})",
+                "read(name: {}, addr: {}, count: {}) -> {:?} (default: {:?})",
                 desc.name,
                 desc.address,
                 desc.count,

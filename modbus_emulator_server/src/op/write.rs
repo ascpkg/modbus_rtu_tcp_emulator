@@ -27,17 +27,7 @@ pub fn register_write_bool(
                     constraints.val
                 );
             }
-            RegisterValueType::Discrete(constraints) => {
-                constraints.set_bits(0, values);
-                tracing::info!(
-                    "write(name: {}, addr: {}, count: {}) -> {:?} (raw: {:?})",
-                    desc.name,
-                    addr,
-                    desc.count,
-                    values,
-                    constraints.val
-                );
-            }
+            RegisterValueType::Discrete(_constraints) => {}
             RegisterValueType::U8(_constraints) => {}
             RegisterValueType::U16(_constraints) => {}
             RegisterValueType::U32(_constraints) => {}

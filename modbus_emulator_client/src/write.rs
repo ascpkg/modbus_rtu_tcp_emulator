@@ -11,9 +11,9 @@ pub async fn write_register(
 ) -> Result<(), Box<dyn std::error::Error>> {
     match &desc.value {
         RegisterValueType::Coils(_constraints) => {
-            let values = params[2..]
+            let values = params[3..]
                 .iter()
-                .map(|s| s.parse::<bool>().unwrap())
+                .map(|s| s.parse::<u8>().unwrap() != 0)
                 .collect::<Vec<bool>>();
             tracing::info!(
                 "write(name: {}, addr: {}, count: {}) -> {:?}",
@@ -26,7 +26,7 @@ pub async fn write_register(
         }
         RegisterValueType::Discrete(_constraints) => {}
         RegisterValueType::U8(constraints) => {
-            let v = params[2].parse::<u16>()?;
+            let v = params[3].parse::<u16>()?;
             if v > u8::MAX.into() || !validate(v as u8, &constraints) {
                 return Err("v > u8::MAX.into() || validate(v as u8, &constraints)".into());
             }
@@ -42,7 +42,7 @@ pub async fn write_register(
             let _ = ctx.write_single_register(desc.address, v).await?;
         }
         RegisterValueType::U16(constraints) => {
-            let v = params[2].parse::<u16>()?;
+            let v = params[3].parse::<u16>()?;
             if !validate(v, &constraints) {
                 return Err("validate(v, &constraints)".into());
             }
@@ -58,7 +58,7 @@ pub async fn write_register(
             let _ = ctx.write_single_register(desc.address, v).await?;
         }
         RegisterValueType::U32(constraints) => {
-            let v = params[2].parse::<u32>()?;
+            let v = params[3].parse::<u32>()?;
             if !validate(v, &constraints) {
                 return Err("validate(v, &constraints)".into());
             }
@@ -89,7 +89,7 @@ pub async fn write_register(
             let _ = ctx.write_multiple_registers(desc.address, &w).await?;
         }
         RegisterValueType::U64(constraints) => {
-            let v = params[2].parse::<u64>()?;
+            let v = params[3].parse::<u64>()?;
             if !validate(v, &constraints) {
                 return Err("validate(v, &constraints)".into());
             }
@@ -120,7 +120,7 @@ pub async fn write_register(
             let _ = ctx.write_multiple_registers(desc.address, &w).await?;
         }
         RegisterValueType::Bytes(constraints) => {
-            let values = params[2..]
+            let values = params[3..]
                 .iter()
                 .map(|s| s.parse::<u8>().unwrap())
                 .collect::<Vec<u8>>();
@@ -149,7 +149,7 @@ pub async fn write_register(
             let _ = ctx.write_multiple_registers(desc.address, &w).await?;
         }
         RegisterValueType::String(constraints) => {
-            let values = params[2..].join("");
+            let values = params[3..].join("");
             if values.as_bytes().len() > (desc.count * 2) as usize {
                 return Err(format!(
                     "len: {} > max_size: {}",
@@ -182,11 +182,11 @@ pub async fn write_register(
         RegisterValueType::Enum(constraints) => {
             let mut v = 0;
             println!("{:?}", constraints.kv);
-            if let Some(i) = constraints.kv.get(params[2]) {
+            if let Some(i) = constraints.kv.get(params[3]) {
                 v = i.clone();
             } else {
                 _ = v;
-                return Err(format!("{} not in {:?}", params[2], constraints.kv).into());
+                return Err(format!("{} not in {:?}", params[3], constraints.kv).into());
             }
             let is_big_endian = constraints.endianness == Some(Endianness::Big);
             let bytes = if is_big_endian {
@@ -210,7 +210,7 @@ pub async fn write_register(
                 desc.count,
                 constraints.endianness.as_ref().unwrap_or(&Endianness::Big),
                 v,
-                params[2],
+                params[3],
                 w
             );
             let _ = ctx.write_multiple_registers(desc.address, &w).await?;
