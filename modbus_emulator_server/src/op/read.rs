@@ -40,6 +40,9 @@ pub fn register_read_bool(
             RegisterValueType::U16(_constraints) => {}
             RegisterValueType::U32(_constraints) => {}
             RegisterValueType::U64(_constraints) => {}
+            RegisterValueType::U16Flags(_constraints) => {}
+            RegisterValueType::U32Flags(_constraints) => {}
+            RegisterValueType::U64Flags(_constraints) => {}
             RegisterValueType::Bytes(_constraints) => {}
             RegisterValueType::String(_constraints) => {}
             RegisterValueType::Enum(_constraints) => {}
@@ -123,6 +126,82 @@ pub fn register_read_u16(
                     val,
                     response
                 );
+            }
+            RegisterValueType::U16Flags(constraints) => {
+                let vo: Option<u16> = if let Some(vf) = constraints.val.clone() {
+                    Some(vf.to_u16())
+                } else if let Some(v) = constraints.default {
+                    Some(v)
+                } else {
+                    None
+                };
+
+                if let Some(v) = vo {
+                    response[0] = v;
+                    tracing::info!(
+                        "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
+                        desc.name,
+                        desc.address,
+                        desc.count,
+                        constraints.endianness.as_ref().unwrap_or(&Endianness::Big),
+                        v,
+                        response
+                    );
+                }
+            }
+            RegisterValueType::U32Flags(constraints) => {
+                let vo: Option<u32> = if let Some(vf) = constraints.val.clone() {
+                    Some(vf.to_u32())
+                } else if let Some(v) = constraints.default {
+                    Some(v)
+                } else {
+                    None
+                };
+                if let Some(v) = vo {
+                    let is_big_endian = constraints.endianness == Some(Endianness::Big);
+                    let bytes = if is_big_endian {
+                        &v.to_be_bytes()
+                    } else {
+                        &v.to_le_bytes()
+                    };
+                    serialize_registers(bytes, is_big_endian, &mut response);
+                    tracing::info!(
+                        "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
+                        desc.name,
+                        desc.address,
+                        desc.count,
+                        constraints.endianness.as_ref().unwrap_or(&Endianness::Big),
+                        v,
+                        response
+                    );
+                }
+            }
+            RegisterValueType::U64Flags(constraints) => {
+                let vo: Option<u64> = if let Some(vf) = constraints.val.clone() {
+                    Some(vf.to_u64())
+                } else if let Some(v) = constraints.default {
+                    Some(v)
+                } else {
+                    None
+                };
+                if let Some(v) = vo {
+                    let is_big_endian = constraints.endianness == Some(Endianness::Big);
+                    let bytes = if is_big_endian {
+                        &v.to_be_bytes()
+                    } else {
+                        &v.to_le_bytes()
+                    };
+                    serialize_registers(bytes, is_big_endian, &mut response);
+                    tracing::info!(
+                        "read(name: {}, addr: {}, count: {}, endianness: {:?}) -> {} (raw: {:?})",
+                        desc.name,
+                        desc.address,
+                        desc.count,
+                        constraints.endianness.as_ref().unwrap_or(&Endianness::Big),
+                        v,
+                        response
+                    );
+                }
             }
             RegisterValueType::Bytes(constraints) => {
                 let val = constraints

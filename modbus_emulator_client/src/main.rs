@@ -62,10 +62,10 @@ w | write <type> <index> <value> : Write data to register
                                    i | input
                                    h | holding
                          <index> : a | all
-                     coils index : 0 - {} (read + write)
-            discrete input index : 0 - {} (read only)
-            input register index : 0 - {} (read only)
-          holding register index : 0 - {} (read + write)
+                     coils index : [0, {}) // read + write
+            discrete input index : [0, {}) // read only
+            input register index : [0, {}) // read only
+          holding register index : [0, {}) // read + write
 ------------------------------------------------------------"#,
         schema.coils.len(),
         schema.discrete_inputs.len(),

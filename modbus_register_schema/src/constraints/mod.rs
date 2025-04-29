@@ -11,7 +11,7 @@ pub mod enumeration;
 pub use enumeration::EnumConstraints;
 
 pub mod number;
-pub use number::NumericConstraints;
+pub use number::{NumericConstraints, NumericFlagsConstraints};
 
 pub mod string;
 pub use string::StringConstraints;

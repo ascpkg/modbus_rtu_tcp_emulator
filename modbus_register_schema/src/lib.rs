@@ -7,6 +7,7 @@ pub mod description;
 pub use description::RegisterDescription;
 pub mod schema;
 pub use schema::RegisterSchema;
+pub mod types;
 pub mod value_type;
 pub use value_type::RegisterValueType;
 

@@ -143,19 +143,77 @@ address = 1046
 count = 8
 value.String.default = "sensor-2"
 
+[[input_registers]]
+name = "i_u16_flags_le"
+address = 1052
+count = 1
+value.U16Flags.default = 0x2
+value.U16Flags.lte = 0x2000
+value.U16Flags.gte = 0
+value.U16Flags.endianness = "Little"
+value.U16Flags.flag_names = ["hardware_error", "software_error", "control_forbidden"]
+
+[[input_registers]]
+name = "i_u16_flags_be"
+address = 1053
+count = 1
+value.U16Flags.default = 0x2
+value.U16Flags.lte = 0x2000
+value.U16Flags.gte = 0
+value.U16Flags.flag_names = ["hardware_error", "software_error", "control_forbidden"]
+
+[[input_registers]]
+name = "i_u32_flags_le"
+address = 1054
+count = 2
+value.U32Flags.default = 0x2
+value.U32Flags.lte = 0x20000000
+value.U32Flags.gte = 0
+value.U32Flags.endianness = "Little"
+value.U32Flags.flag_names = ["hardware_error", "software_error", "control_forbidden"]
+
+[[input_registers]]
+name = "i_u32_flags_be"
+address = 1056
+count = 2
+value.U32Flags.default = 0x2
+value.U32Flags.lte = 0x20000000
+value.U32Flags.gte = 0
+value.U32Flags.flag_names = ["hardware_error", "software_error", "control_forbidden"]
+
+[[input_registers]]
+name = "i_u64_flags_le"
+address = 1058
+count = 4
+value.U64Flags.default = 0x2
+value.U64Flags.lte = 0x2000000000000000
+value.U64Flags.gte = 0
+value.U64Flags.endianness = "Little"
+value.U64Flags.flag_names = ["hardware_error", "software_error", "control_forbidden"]
+
+[[input_registers]]
+name = "i_u64_flags_be"
+address = 1062
+count = 4
+value.U64Flags.default = 0x2
+value.U64Flags.lte = 0x2000000000000000
+value.U64Flags.gte = 0
+value.U64Flags.flag_names = ["hardware_error", "software_error", "control_forbidden"]
+
 [[coils]]
 name = "coil_test"
-address = 1052
+address = 1066
 count = 1
 value.Coils.max_bits = 8
 value.Coils.val = [0x66]
 
 [[discrete_inputs]]
 name = "discrete_test"
-address = 1053
+address = 1067
 count = 1
 value.Discrete.max_bits = 16
 value.Discrete.val = [0x96, 0xb9]
+
 
 [[holding_registers]]
 name = "h_u8_le"
@@ -309,3 +367,61 @@ address = 5054
 count = 2
 value.Enum.default = "black"
 value.Enum.kv = { black = 1, white = 2, red = 3, green = 4, blue = 5, yellow = 6, pink = 7 }
+
+[[holding_registers]]
+name = "h_u16_flags_le"
+address = 5056
+count = 1
+value.U16Flags.default = 0x2
+value.U16Flags.lte = 0x2000
+value.U16Flags.gte = 0
+value.U16Flags.endianness = "Little"
+value.U16Flags.flag_names = ["hardware_error", "software_error", "control_forbidden"]
+
+[[holding_registers]]
+name = "h_u16_flags_be"
+address = 5057
+count = 1
+value.U16Flags.default = 0x2
+value.U16Flags.lte = 0x2000
+value.U16Flags.gte = 0
+value.U16Flags.flag_names = ["hardware_error", "software_error", "control_forbidden"]
+
+[[holding_registers]]
+name = "h_u32_flags_le"
+address = 5058
+count = 2
+value.U32Flags.default = 0x2
+value.U32Flags.lte = 0x20000000
+value.U32Flags.gte = 0
+value.U32Flags.endianness = "Little"
+value.U32Flags.flag_names = ["hardware_error", "software_error", "control_forbidden"]
+
+[[holding_registers]]
+name = "h_u32_flags_be"
+address = 5060
+count = 2
+value.U32Flags.default = 0x2
+value.U32Flags.lte = 0x20000000
+value.U32Flags.gte = 0
+value.U32Flags.flag_names = ["hardware_error", "software_error", "control_forbidden"]
+
+[[holding_registers]]
+name = "h_u64_flags_le"
+address = 5062
+count = 4
+value.U64Flags.default = 0x2
+value.U64Flags.lte = 0x2000000000000000
+value.U64Flags.gte = 0
+value.U64Flags.endianness = "Little"
+value.U64Flags.flag_names = ["hardware_error", "software_error", "control_forbidden"]
+
+[[holding_registers]]
+name = "h_u64_flags_be"
+address = 5066
+count = 4
+value.U64Flags.default = 0x2
+value.U64Flags.lte = 0x2000000000000000
+value.U64Flags.gte = 0
+value.U64Flags.flag_names = ["hardware_error", "software_error", "control_forbidden"]
+

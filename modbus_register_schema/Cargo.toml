@@ -10,6 +10,8 @@ repository = "https://github.com/ascpkg/modbus_rtu_tcp_emulator/tree/main/modbus
 
 
 [dependencies]
+bitflags = { version = "2.9.0", features = ["serde"]}
 config_file_derives = { version = "2025.1.6" }
 config_file_types = { version = "2025.1.6", default-features = false, features = ["toml"] }
 serde = { version = "1.0.210", features = ["derive"] }
+serde_derive = { version = "1.0.210" }
